@@ -12,7 +12,6 @@ const loadProducts = () => {
         .then((json) => displayProducts(json));
 };
 
-
 // click functionality for Categories
 document.addEventListener("click", function (event) {
     if (event.target.classList.contains("category-btn")) {
@@ -27,6 +26,12 @@ document.addEventListener("click", function (event) {
             button.classList.remove("bg-primary", "text-base-100");
         });
         btn.classList.add("bg-primary", "text-base-100");
+    }
+    const category = btn.dataset.category;
+    if (category === "all") {
+        loadProducts();
+    } else {
+        loadCategoryProduct(category);
     }
 });
 
@@ -46,7 +51,7 @@ loadCategoryProduct = async (category) => {
         displayCategoryProduct(data);
     } catch (error) {
         console.error("Error fetching the data:", error);
-        productsContainer.innerHTML = `<p class="col-span-full text-center text-error">Failed to load products.</p>`
+        productsContainer.innerHTML = `<h1 class="col-span-full text-center text-4xl text-error montserrat-extrabold my-100">Failed to load products :(</h1>`
     }
 };
 // display category wise products
@@ -56,10 +61,10 @@ displayCategoryProduct = (data) => {
     for (let product of data) {
         console.log(product.title);
         const specificCards = document.createElement("div");
-        specificCards.classList.add('card', 'bg-base-100', 'w-auto', 'shadow-md', 'flex', 'flex-col', 'h-full');
+        specificCards.classList.add('card', 'bg-base-100', 'w-auto', 'shadow-xl', 'flex', 'flex-wrap', 'pt-2', 'border', 'border-primary', 'h-md');
         specificCards.innerHTML = `
         <figure>
-                    <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Shoes" />
+                    <img class="w-full h-48 object-contain" src="${product.image}" alt="Shoes" />
                 </figure>
                 <div class="card-body">
                     <div class="gender-rating flex justify-between items-center">
@@ -74,11 +79,12 @@ displayCategoryProduct = (data) => {
                     </div>
                     <div class="flex flex-col h-[77px] relative">
                     <h2 class="card-title product-name text-md line-clamp-2">${product.title}</h2>
-                    <p class="product-price open-sans-bold text-md absolute bottom-0 left-0">
+                    <br>
+                    <p class="product-price open-sans-bold text-lg absolute bottom-0 left-0">
                         $<span>${product.price}</span>
                     </p>
                     </div>
-                    <div class="card-actions justify-evenly">
+                    <div class="card-actions justify-around mt-auto">
                         <button class="rounded-md px-12 btn btn-base text-gray-600"><i
                                 class="fa-regular fa-eye"></i>Details</button>
                         <button class="rounded-md px-12 btn btn-primary"><i
@@ -111,10 +117,10 @@ const displayProducts = (products) => {
     productsContainer.innerHTML = ``;
     for (let product of products) {
         const cardDiv = document.createElement("div");
-        cardDiv.classList.add('card', 'bg-base-100', 'w-auto', 'shadow-md', 'flex', 'flex-col', 'h-full');
+        cardDiv.classList.add('card', 'bg-base-100', 'w-auto', 'shadow-xl', 'flex', 'flex-col', 'h-full', 'pt-2', 'border', 'border-primary');
         cardDiv.innerHTML = `
             <figure>
-                    <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Shoes" />
+                    <img class="w-full h-48 object-contain" src="${product.image}" alt="Shoes" />
                 </figure>
                 <div class="card-body">
                     <div class="gender-rating flex justify-between items-center">
@@ -146,5 +152,6 @@ const displayProducts = (products) => {
     }
 }
 
+// Call Global Functions
 loadCategories();
 loadProducts();
