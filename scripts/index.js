@@ -12,16 +12,15 @@ const loadProducts = () => {
         .then((json) => displayProducts(json));
 };
 
-// Function for Top Rate Products
+// Function for Top Rated Products
 const topRatedProducts = () => {
     fetch("https://fakestoreapi.com/products")
         .then((res) => res.json())
         .then((json) => {
             const topProductSorted = json.sort((a, b) => a.rating.rate - b.rating.rate);
             const top3Products = topProductSorted.slice(0, 3);
-            console.log(top3Products);
 
-// top Product Container
+            // top Product Container
             let topProductsContainer = document.getElementById('trending-products');
             topProductsContainer.innerHTML = ``;
             top3Products.forEach(product => {
@@ -50,7 +49,7 @@ const topRatedProducts = () => {
                     </p>
                     </div>
                     <div class="card-actions justify-around mt-auto">
-                        <button class="rounded-md px-12 btn btn-base text-gray-600"><i
+                        <button onclick="openDetails(${product.id})" class="rounded-md px-12 btn btn-base text-gray-600"><i
                                 class="fa-regular fa-eye"></i>Details</button>
                         <button class="rounded-md px-12 btn btn-primary"><i
                                 class="fa-solid fa-cart-shopping"></i>Add</button>
@@ -87,7 +86,47 @@ document.addEventListener("click", function (event) {
 });
 
 // Click Functionality for Details Buttons
+const openDetails = async (id) => {
+    const modalVisibility = document.getElementById('details-modal');
+    const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+    const data = await res.json();
 
+    const modalContentContainer = document.getElementById('modal-content');
+
+    modalContentContainer.innerHTML = `
+        <figure class="bg-gray-100 p-10 flex justify-center">
+            <img src="${data.image}" class="max-h-60 object-contain" />
+        </figure>
+        <div class="p-2">
+            <h3 class="font-bold text-2xl mb-2">${data.title}</h3>
+            <div class="badge badge-primary mb-4 p-3 open-sans-semibold my-1">${data.category}</div>
+            <p class="text-gray-600 mb-4">${data.description}</p>
+            <div class="flex justify-between items-center">
+                <p class="text-3xl font-bold text-primary">$${data.price}</p>
+                <div class="flex items-center gap-1">
+                    <span class="text-yellow-500 text-xl">★</span>
+                    <span class="font-bold">${data.rating.rate}</span>
+                    <span class="text-gray-400">(${data.rating.count})</span>
+                </div>
+            </div>
+            
+                <div class="flex justify-center w-full my-4">
+                    <button class="rounded-md px-12 btn btn-primary hover:bg-base-100 hover:text-gray-900">Add to Cart</button>
+                </div>
+            
+                <div class="text-center my-2">
+                    <p class="py-4 open-sans-medium">Press ESC key or click the button below to close</p>
+                </div>
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button class="btn border border-indigo-700 hover:bg-primary hover:text-base-100">Close</button>
+                    </form>
+                </div>
+        </div>
+    `
+    modalVisibility.showModal();
+
+}
 
 // categorizing products in groups
 loadCategoryProduct = async (category) => {
@@ -138,7 +177,7 @@ displayCategoryProduct = (data) => {
                     </p>
                     </div>
                     <div class="card-actions justify-around mt-auto">
-                        <button class="rounded-md px-12 btn btn-base text-gray-600"><i
+                        <button onclick=openDetails(${product.id}) class="rounded-md px-12 btn btn-base text-gray-600"><i
                                 class="fa-regular fa-eye"></i>Details</button>
                         <button class="rounded-md px-12 btn btn-primary"><i
                                 class="fa-solid fa-cart-shopping"></i>Add</button>
@@ -164,7 +203,7 @@ const displayCategories = (categories) => {
 
 };
 
-// get and display Products
+// get and display all Products
 const displayProducts = (products) => {
     const productsContainer = document.getElementById("products-container");
     productsContainer.innerHTML = ``;
@@ -193,7 +232,7 @@ const displayProducts = (products) => {
                     </p>
                     </div>
                     <div class="card-actions justify-evenly mt-auto">
-                        <button class="rounded-md px-12 btn btn-base text-gray-600"><i
+                        <button onclick="openDetails(${product.id})" class="rounded-md px-12 btn btn-base text-gray-600"><i
                                 class="fa-regular fa-eye"></i>Details</button>
                         <button class="rounded-md px-12 btn btn-primary"><i
                                 class="fa-solid fa-cart-shopping"></i>Add</button>
