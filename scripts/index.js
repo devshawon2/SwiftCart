@@ -31,18 +31,64 @@ document.addEventListener("click", function (event) {
 });
 
 // categorizing products in groups
-loadCategoryProduct = (category) => {
-    const categoryWiseProductUrl = `https://fakestoreapi.com/products/category/${category}`;
-    fetch(categoryWiseProductUrl)
-        .then((res) => res.json())
-        .then((data) => displayCategoryProduct(data));
-}
+loadCategoryProduct = async (category) => {
+    const productsContainer = document.getElementById("products-container");
+    productsContainer.innerHTML = `
+        <div class="col-span-full flex justify-center items-center min-h-[400px]">
+            <span class="loading loading-infinity loading-xl w-20 text-primary"></span>
+        </div>
+    `;
+    try {
+
+        const res = await fetch(`https://fakestoreapi.com/products/category/${category}`);
+        const data = await res.json();
+
+        displayCategoryProduct(data);
+    } catch (error) {
+        console.error("Error fetching the data:", error);
+        productsContainer.innerHTML = `<p class="col-span-full text-center text-error">Failed to load products.</p>`
+    }
+};
 // display category wise products
 displayCategoryProduct = (data) => {
     const productsContainer = document.getElementById("products-container");
     productsContainer.innerHTML = ``;
-    const spinnerContainer = document.createElement("div");
-    spinnerContainer.classList.add("border", "border-indigo-700");
+    for (let product of data) {
+        console.log(product.title);
+        const specificCards = document.createElement("div");
+        specificCards.classList.add('card', 'bg-base-100', 'w-auto', 'shadow-md', 'flex', 'flex-col', 'h-full');
+        specificCards.innerHTML = `
+        <figure>
+                    <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Shoes" />
+                </figure>
+                <div class="card-body">
+                    <div class="gender-rating flex justify-between items-center">
+                        <div class="clothing-gender">
+                            <p class="gender text-primary open-sans-bold text-sm">${product.category}</p>
+                        </div>
+                        <div class="user-ratings flex items-center">
+                            <i class="fa-solid text-yellow-400 fa-star"></i>
+                            <p class="rating px-1"> ${product.rating.rate}</p>
+                            <p class="total-ratings"> (${product.rating.count})</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col h-[77px] relative">
+                    <h2 class="card-title product-name text-md line-clamp-2">${product.title}</h2>
+                    <p class="product-price open-sans-bold text-md absolute bottom-0 left-0">
+                        $<span>${product.price}</span>
+                    </p>
+                    </div>
+                    <div class="card-actions justify-evenly">
+                        <button class="rounded-md px-12 btn btn-base text-gray-600"><i
+                                class="fa-regular fa-eye"></i>Details</button>
+                        <button class="rounded-md px-12 btn btn-primary"><i
+                                class="fa-solid fa-cart-shopping"></i>Add</button>
+                    </div>
+                </div>
+        `
+        productsContainer.append(specificCards);
+    };
+
 }
 // get and show Categories
 const displayCategories = (categories) => {
